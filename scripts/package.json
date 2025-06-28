@@ -1,0 +1,19 @@
+{
+  "name": "devops-load-testing",
+  "version": "1.0.0",
+  "description": "Simple load testing tools for DevOps pipeline application",
+  "main": "load-test.js",
+  "scripts": {
+    "load-test": "node load-test.js",
+    "load-test-quick": "node load-test.js --users 5 --requests 20",
+    "load-test-stress": "node load-test.js --users 50 --requests 100"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "commander": "^11.0.0"
+  },
+  "devDependencies": {},
+  "keywords": ["load-testing", "devops", "performance"],
+  "author": "DevOps Team",
+  "license": "MIT"
+}

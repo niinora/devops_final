@@ -18,7 +18,7 @@ jobs:
       - name: Validate project structure
         run: |
           echo "🔍 Validating project structure..."
-          
+
           # Check for required files
           files_to_check=(
             "docker-compose.yml"
@@ -27,7 +27,7 @@ jobs:
             "backend/Dockerfile"
             "monitoring/prometheus/prometheus.yml"
           )
-          
+
           for file in "${files_to_check[@]}"; do
             if [[ -f "$file" ]]; then
               echo "✅ Found: $file"
@@ -36,7 +36,7 @@ jobs:
               exit 1
             fi
           done
-          
+
           echo "🎉 Project structure validation passed!"
 
   # Basic Security Check
@@ -51,21 +51,21 @@ jobs:
       - name: Check for secrets in code
         run: |
           echo "🔒 Checking for exposed secrets..."
-          
+
           # Simple grep for common secret patterns
           if grep -r "password.*=" . --include="*.js" --include="*.yml" --include="*.json" | grep -v "env.example" | grep -v ".git"; then
             echo "⚠️ Found potential hardcoded passwords"
           else
             echo "✅ No hardcoded passwords found"
           fi
-          
+
           # Check for API keys
           if grep -r "api_key\|apikey\|secret_key" . --include="*.js" --include="*.yml" | grep -v "env.example" | grep -v ".git"; then
             echo "⚠️ Found potential API keys"
           else
             echo "✅ No exposed API keys found"
           fi
-          
+
           echo "🔒 Basic security check completed"
 
   # Docker Build Test
@@ -86,15 +86,15 @@ jobs:
       - name: Test Docker builds
         run: |
           echo "🏗️ Testing Docker builds..."
-          
+
           # Build frontend
           echo "Building frontend..."
           docker build -t devops-frontend ./frontend
-          
+
           # Build backend
           echo "Building backend..."
           docker build -t devops-backend ./backend
-          
+
           echo "✅ All Docker builds successful"
 
   # Integration Test
@@ -121,23 +121,23 @@ jobs:
       - name: Check service health
         run: |
           echo "🏥 Checking service health..."
-          
+
           # Check if containers are running
           docker-compose ps
-          
+
           # Simple connectivity tests
           if curl -f http://localhost:3000 >/dev/null 2>&1; then
             echo "✅ Frontend is responding"
           else
             echo "⚠️ Frontend not responding (may be expected in CI)"
           fi
-          
+
           if curl -f http://localhost:5000/health >/dev/null 2>&1; then
             echo "✅ Backend health check passed"
           else
             echo "⚠️ Backend health check failed (may be expected in CI)"
           fi
-          
+
           if curl -f http://localhost:9090/-/healthy >/dev/null 2>&1; then
             echo "✅ Prometheus is healthy"
           else
@@ -169,28 +169,28 @@ jobs:
       - name: Check documentation completeness
         run: |
           echo "📚 Checking documentation..."
-          
+
           # Check README
           if [[ -f "README.md" ]] && [[ $(wc -l < README.md) -gt 50 ]]; then
             echo "✅ README.md is comprehensive"
           else
             echo "⚠️ README.md needs more content"
           fi
-          
+
           # Check for project summary
           if [[ -f "PROJECT_SUMMARY.md" ]]; then
             echo "✅ PROJECT_SUMMARY.md found"
           else
             echo "⚠️ PROJECT_SUMMARY.md missing"
           fi
-          
+
           # Check for post-mortem
           if [[ -f "docs/post-mortem.md" ]]; then
             echo "✅ Post-mortem documentation found"
           else
             echo "⚠️ Post-mortem documentation missing"
           fi
-          
+
           echo "📚 Documentation check completed"
 
   # Success Summary

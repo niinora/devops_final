@@ -5,6 +5,7 @@ This project demonstrates a complete DevOps pipeline for a multi-service applica
 ## Project Overview
 
 This application consists of:
+
 - **Frontend**: React.js web application
 - **Backend**: Node.js/Express API service
 - **Database**: PostgreSQL database
@@ -36,28 +37,32 @@ This application consists of:
 ## Services
 
 ### Frontend Service
+
 - **Technology**: React.js
 - **Port**: 3000
 - **Features**: User interface for the application
 - **Health Check**: `/health` endpoint
 
 ### Backend Service
+
 - **Technology**: Node.js with Express
 - **Port**: 5000
 - **Features**: REST API endpoints
 - **Health Check**: `/health` endpoint
-- **Endpoints**: 
+- **Endpoints**:
   - `GET /api/users` - List users
   - `POST /api/users` - Create user
   - `GET /api/metrics` - Application metrics
 
 ### Database Service
+
 - **Technology**: PostgreSQL
 - **Port**: 5432
 - **Features**: Data persistence
 - **Credentials**: Managed via environment variables
 
 ### Monitoring Stack
+
 - **Prometheus**: Metrics collection and storage
 - **Grafana**: Metrics visualization and dashboards
 - **Custom Metrics**: Application-specific metrics for monitoring
@@ -71,18 +76,21 @@ This application consists of:
 ## Quick Start
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd devops-final
    ```
 
 2. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
 3. **Build and run the application**
+
    ```bash
    docker-compose up --build
    ```
@@ -96,12 +104,14 @@ This application consists of:
 ## Security Implementation
 
 ### Container Security Scanning
+
 - **Tool**: Trivy
 - **Scan Command**: `trivy image <image-name>`
 - **Integration**: Automated scanning in CI/CD pipeline
 - **Reports**: Stored in `security-reports/` directory
 
 ### Secrets Management
+
 - **Method**: Docker secrets and .env files
 - **Sensitive Data**: Database credentials, API keys
 - **Security**: No hardcoded secrets in code
@@ -109,11 +119,13 @@ This application consists of:
 ## Monitoring Implementation
 
 ### Prometheus Configuration
+
 - **Targets**: Frontend, Backend, Database
 - **Metrics**: CPU, Memory, HTTP requests, Custom application metrics
 - **Scrape Interval**: 15 seconds
 
 ### Grafana Dashboards
+
 - **System Overview**: CPU, Memory, Disk usage
 - **Application Metrics**: Request rate, Response times, Error rates
 - **Custom Dashboards**: Application-specific monitoring
@@ -121,23 +133,27 @@ This application consists of:
 ## Incident Simulation and Post-Mortem
 
 ### Simulated Incident
+
 - **Scenario**: Backend service failure
 - **Detection**: Prometheus alerts and Grafana dashboards
 - **Response**: Automated restart via Docker Compose
 - **Resolution**: Service recovery and monitoring
 
 ### Post-Mortem Report
+
 - **Location**: `docs/post-mortem.md`
 - **Contents**: Incident timeline, root cause analysis, lessons learned
 
 ## Automation
 
 ### Ansible Playbooks
+
 - **Deployment**: Automated application deployment
 - **Configuration**: Environment setup and configuration
 - **Monitoring**: Prometheus and Grafana setup
 
 ### Usage
+
 ```bash
 # Deploy the application
 ansible-playbook playbooks/deploy.yml
@@ -149,17 +165,20 @@ ansible-playbook playbooks/monitoring.yml
 ## Development Workflow
 
 1. **Local Development**
+
    ```bash
    docker-compose up -d
    ```
 
 2. **Testing**
+
    ```bash
    docker-compose exec backend npm test
    docker-compose exec frontend npm test
    ```
 
 3. **Security Scanning**
+
    ```bash
    ./scripts/security-scan.sh
    ```

@@ -10,102 +10,102 @@ jobs:
   structure-validation:
     name: Project Structure Validation
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      
-    - name: Validate Core Project Structure
-      run: |
-        echo "🔍 Validating DevOps project structure..."
-        
-        # Check required files
-        echo "📁 Core files validation:"
-        files=("docker-compose.yml" "README.md" "frontend/Dockerfile" "backend/Dockerfile")
-        
-        all_found=true
-        for file in "${files[@]}"; do
-          if [[ -f "$file" ]]; then
-            echo "✅ $file"
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Validate Core Project Structure
+        run: |
+          echo "🔍 Validating DevOps project structure..."
+
+          # Check required files
+          echo "📁 Core files validation:"
+          files=("docker-compose.yml" "README.md" "frontend/Dockerfile" "backend/Dockerfile")
+
+          all_found=true
+          for file in "${files[@]}"; do
+            if [[ -f "$file" ]]; then
+              echo "✅ $file"
+            else
+              echo "❌ $file - Missing"
+              all_found=false
+            fi
+          done
+
+          if [[ "$all_found" == true ]]; then
+            echo ""
+            echo "✅ Core project structure validated successfully!"
           else
-            echo "❌ $file - Missing"
-            all_found=false
+            echo ""
+            echo "❌ Some required files are missing"
+            exit 1
           fi
-        done
-        
-        if [[ "$all_found" == true ]]; then
-          echo ""
-          echo "✅ Core project structure validated successfully!"
-        else
-          echo ""
-          echo "❌ Some required files are missing"
-          exit 1
-        fi
 
   configuration-validation:
     name: Configuration & Documentation Validation
     runs-on: ubuntu-latest
     needs: structure-validation
-    
+
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      
-    - name: Validate Configuration & Documentation
-      run: |
-        echo "📊 Validating monitoring and security configuration..."
-        
-        # Check monitoring setup
-        echo "📈 Monitoring configuration:"
-        [[ -f "monitoring/prometheus/prometheus.yml" ]] && echo "✅ Prometheus configuration"
-        [[ -f "monitoring/grafana/dashboards/system-overview.json" ]] && echo "✅ Grafana dashboard"
-        
-        # Check security setup
-        echo ""
-        echo "🔒 Security configuration:"
-        [[ -f "env.example" ]] && echo "✅ Environment template"
-        [[ -f "scripts/security-scan.sh" ]] && echo "✅ Security scan script"
-        
-        # Check documentation
-        echo ""
-        echo "📚 Documentation validation:"
-        if [[ -f "README.md" ]]; then
-          lines=$(wc -l < README.md)
-          echo "✅ README.md ($lines lines)"
-        fi
-        
-        [[ -f "docs/post-mortem.md" ]] && echo "✅ Post-mortem documentation"
-        [[ -f "PROJECT_SUMMARY.md" ]] && echo "✅ Project summary"
-        
-        echo ""
-        echo "✅ Configuration and documentation validated!"
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Validate Configuration & Documentation
+        run: |
+          echo "📊 Validating monitoring and security configuration..."
+
+          # Check monitoring setup
+          echo "📈 Monitoring configuration:"
+          [[ -f "monitoring/prometheus/prometheus.yml" ]] && echo "✅ Prometheus configuration"
+          [[ -f "monitoring/grafana/dashboards/system-overview.json" ]] && echo "✅ Grafana dashboard"
+
+          # Check security setup
+          echo ""
+          echo "🔒 Security configuration:"
+          [[ -f "env.example" ]] && echo "✅ Environment template"
+          [[ -f "scripts/security-scan.sh" ]] && echo "✅ Security scan script"
+
+          # Check documentation
+          echo ""
+          echo "📚 Documentation validation:"
+          if [[ -f "README.md" ]]; then
+            lines=$(wc -l < README.md)
+            echo "✅ README.md ($lines lines)"
+          fi
+
+          [[ -f "docs/post-mortem.md" ]] && echo "✅ Post-mortem documentation"
+          [[ -f "PROJECT_SUMMARY.md" ]] && echo "✅ Project summary"
+
+          echo ""
+          echo "✅ Configuration and documentation validated!"
 
   deployment-readiness:
     name: Deployment Readiness Assessment
     runs-on: ubuntu-latest
     needs: [structure-validation, configuration-validation]
-    
+
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      
-    - name: Assess Deployment Readiness
-      run: |
-        echo "🚀 Assessing deployment readiness..."
-        
-        # Check automation components
-        echo "🤖 Automation components:"
-        [[ -f "ansible/playbooks/deploy.yml" ]] && echo "✅ Ansible deployment playbook"
-        [[ -f "scripts/setup.sh" ]] && echo "✅ Setup automation script"
-        [[ -f "scripts/ci-cd-deploy.sh" ]] && echo "✅ CI/CD deployment script"
-        
-        echo ""
-        echo "🎯 DevOps Pipeline Assessment Complete"
-        echo "====================================="
-        echo "✅ Containerization: Docker & Docker Compose"
-        echo "✅ Monitoring: Prometheus & Grafana"
-        echo "✅ Security: Environment management & scanning"
-        echo "✅ Documentation: README, post-mortem, summary"
-        echo "✅ Automation: Ansible playbooks & scripts"
-        echo ""
-        echo "🚀 Project is ready for production deployment!"
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Assess Deployment Readiness
+        run: |
+          echo "🚀 Assessing deployment readiness..."
+
+          # Check automation components
+          echo "🤖 Automation components:"
+          [[ -f "ansible/playbooks/deploy.yml" ]] && echo "✅ Ansible deployment playbook"
+          [[ -f "scripts/setup.sh" ]] && echo "✅ Setup automation script"
+          [[ -f "scripts/ci-cd-deploy.sh" ]] && echo "✅ CI/CD deployment script"
+
+          echo ""
+          echo "🎯 DevOps Pipeline Assessment Complete"
+          echo "====================================="
+          echo "✅ Containerization: Docker & Docker Compose"
+          echo "✅ Monitoring: Prometheus & Grafana"
+          echo "✅ Security: Environment management & scanning"
+          echo "✅ Documentation: README, post-mortem, summary"
+          echo "✅ Automation: Ansible playbooks & scripts"
+          echo ""
+          echo "🚀 Project is ready for production deployment!"

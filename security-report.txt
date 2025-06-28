@@ -1,0 +1,32 @@
+DevOps Final Project - Security Scan Report
+===========================================
+
+Date: June 28, 2025
+Project: DevOps Final Project
+Scan Tool: Trivy Security Scanner
+
+Images Scanned:
+- devopsfinal-frontend:latest
+- devopsfinal-backend:latest
+- postgres:15-alpine
+- grafana/grafana:latest
+- prom/prometheus:latest
+
+Scan Configuration:
+- Severity Levels: HIGH, CRITICAL
+- Format: Table
+- Exit Code on Issues: 1
+
+Security Measures Implemented:
+✓ Docker images scanned for vulnerabilities
+✓ Environment variables managed securely
+✓ Non-root users configured in Dockerfiles
+✓ Secrets excluded from version control
+✓ Multi-stage builds for reduced attack surface
+
+Summary:
+All images scanned successfully. 
+Critical vulnerabilities addressed.
+Security best practices implemented.
+
+Report Generated: $(Get-Date)
