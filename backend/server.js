@@ -123,6 +123,32 @@ app.get('/health', async (req, res) => {
     }
 });
 
+// API Health check endpoint (for frontend)
+app.get('/api/health', async (req, res) => {
+    try {
+        const client = await pool.connect();
+        await client.query('SELECT 1');
+        client.release();
+
+        res.json({
+            status: 'healthy',
+            service: 'backend',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            database: 'connected',
+            version: process.env.npm_package_version || '1.0.0'
+        });
+    } catch (error) {
+        res.status(503).json({
+            status: 'unhealthy',
+            service: 'backend',
+            timestamp: new Date().toISOString(),
+            error: error.message,
+            database: 'disconnected'
+        });
+    }
+});
+
 // Metrics endpoint for Prometheus
 app.get('/metrics', async (req, res) => {
     try {
@@ -267,4 +293,4 @@ process.on('SIGINT', () => {
     console.log('SIGINT received, shutting down gracefully');
     pool.end();
     process.exit(0);
-}); 
+});

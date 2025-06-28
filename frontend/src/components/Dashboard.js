@@ -6,8 +6,7 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchSystemStatus = async () => {
+    useEffect(() => {        const fetchSystemStatus = async () => {
             try {
                 const [frontendRes, backendRes] = await Promise.all([
                     axios.get('/health'),

@@ -306,4 +306,17 @@ This project demonstrates mastery of:
 
 This project successfully implements all required components of a modern DevOps pipeline, demonstrating practical knowledge of containerization, monitoring, security, automation, and incident management. The implementation is production-ready and follows industry best practices.
 
-The project serves as a comprehensive example of how to build, deploy, monitor, and maintain a multi-service application using modern DevOps tools and practices. 
+The project serves as a comprehensive example of how to build, deploy, monitor, and maintain a multi-service application using modern DevOps tools and practices.
+
+## Final Submission Files
+
+### Main Report Document
+- **DevOps_Final_Project_Report.docx** - Complete Word document with all screenshots, explanations, and evidence of project completion
+
+### Supporting Documentation
+- **README.md** - Project setup and overview
+- **PROJECT_SUMMARY.md** - Technical implementation summary
+- **docs/post-mortem.md** - Incident simulation documentation
+- **security-report.txt** - Security scanning results
+
+---

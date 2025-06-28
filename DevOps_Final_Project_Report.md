@@ -2,11 +2,9 @@
 
 ## Multi-Service Application with Complete CI/CD Pipeline
 
-**Student Name:** [Your Name]  
-**Student ID:** [Your ID]  
-**Course:** DevOps Engineering  
+**Student Name:** Nino Ramishvili 
+**Course:** DevOps
 **Date:** June 28, 2025  
-**Instructor:** [Instructor Name]
 
 ---
 
