@@ -1,0 +1,147 @@
+---
+- name: Setup Monitoring Stack
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  
+  vars:
+    project_dir: "{{ playbook_dir }}/../.."
+    monitoring_dir: "{{ project_dir }}/monitoring"
+    
+  tasks:
+    - name: Check if monitoring directory exists
+      stat:
+        path: "{{ monitoring_dir }}"
+      register: monitoring_dir_check
+      
+    - name: Create monitoring directory structure
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ monitoring_dir }}/prometheus"
+        - "{{ monitoring_dir }}/grafana/provisioning/datasources"
+        - "{{ monitoring_dir }}/grafana/provisioning/dashboards"
+        - "{{ monitoring_dir }}/grafana/dashboards"
+      when: not monitoring_dir_check.stat.exists
+      
+    - name: Create Prometheus configuration
+      copy:
+        dest: "{{ monitoring_dir }}/prometheus/prometheus.yml"
+        content: |
+          global:
+            scrape_interval: 15s
+            evaluation_interval: 15s
+          
+          scrape_configs:
+            - job_name: 'prometheus'
+              static_configs:
+                - targets: ['localhost:9090']
+            
+            - job_name: 'backend'
+              static_configs:
+                - targets: ['backend:5000']
+              metrics_path: '/metrics'
+              scrape_interval: 10s
+            
+            - job_name: 'node-exporter'
+              static_configs:
+                - targets: ['node-exporter:9100']
+              scrape_interval: 15s
+        mode: '0644'
+        
+    - name: Create Grafana datasource configuration
+      copy:
+        dest: "{{ monitoring_dir }}/grafana/provisioning/datasources/prometheus.yml"
+        content: |
+          apiVersion: 1
+          
+          datasources:
+            - name: Prometheus
+              type: prometheus
+              access: proxy
+              url: http://prometheus:9090
+              isDefault: true
+              editable: true
+        mode: '0644'
+        
+    - name: Create Grafana dashboard provisioning
+      copy:
+        dest: "{{ monitoring_dir }}/grafana/provisioning/dashboards/dashboard.yml"
+        content: |
+          apiVersion: 1
+          
+          providers:
+            - name: 'default'
+              orgId: 1
+              folder: ''
+              type: file
+              disableDeletion: false
+              updateIntervalSeconds: 10
+              allowUiUpdates: true
+              options:
+                path: /var/lib/grafana/dashboards
+        mode: '0644'
+        
+    - name: Create basic system dashboard
+      copy:
+        dest: "{{ monitoring_dir }}/grafana/dashboards/system-overview.json"
+        content: |
+          {
+            "dashboard": {
+              "id": null,
+              "title": "System Overview",
+              "tags": ["devops", "system"],
+              "style": "dark",
+              "timezone": "browser",
+              "panels": [
+                {
+                  "id": 1,
+                  "title": "CPU Usage",
+                  "type": "stat",
+                  "targets": [
+                    {
+                      "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+                      "legendFormat": "CPU Usage %"
+                    }
+                  ],
+                  "fieldConfig": {
+                    "defaults": {
+                      "color": {
+                        "mode": "thresholds"
+                      },
+                      "thresholds": {
+                        "steps": [
+                          {"color": "green", "value": null},
+                          {"color": "yellow", "value": 70},
+                          {"color": "red", "value": 90}
+                        ]
+                      },
+                      "unit": "percent"
+                    }
+                  },
+                  "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+                }
+              ],
+              "time": {
+                "from": "now-1h",
+                "to": "now"
+              },
+              "refresh": "10s"
+            }
+          }
+        mode: '0644'
+        
+    - name: Display monitoring setup status
+      debug:
+        msg: "Monitoring stack configuration completed!"
+        
+    - name: Display next steps
+      debug:
+        msg: |
+          Next steps:
+          1. Run 'docker-compose up -d' to start the monitoring stack
+          2. Access Grafana at http://localhost:3001 (admin/admin)
+          3. Access Prometheus at http://localhost:9090
+          4. Import the system dashboard in Grafana 

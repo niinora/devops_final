@@ -1,0 +1,83 @@
+---
+- name: Deploy DevOps Pipeline Application
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  
+  vars:
+    project_dir: "{{ playbook_dir }}/../.."
+    docker_compose_file: "{{ project_dir }}/docker-compose.yml"
+    env_file: "{{ project_dir }}/.env"
+    
+  tasks:
+    - name: Check if Docker is installed
+      command: docker --version
+      register: docker_check
+      failed_when: false
+      
+    - name: Fail if Docker is not installed
+      fail:
+        msg: "Docker is not installed. Please install Docker first."
+      when: docker_check.rc != 0
+      
+    - name: Check if Docker Compose is installed
+      command: docker-compose --version
+      register: compose_check
+      failed_when: false
+      
+    - name: Fail if Docker Compose is not installed
+      fail:
+        msg: "Docker Compose is not installed. Please install Docker Compose first."
+      when: compose_check.rc != 0
+      
+    - name: Create .env file if it doesn't exist
+      copy:
+        src: "{{ project_dir }}/env.example"
+        dest: "{{ env_file }}"
+        force: false
+      when: env_file is not defined or not env_file | exists
+      
+    - name: Stop existing containers
+      command: docker-compose -f "{{ docker_compose_file }}" down
+      args:
+        chdir: "{{ project_dir }}"
+      register: stop_result
+      failed_when: false
+      
+    - name: Build and start containers
+      command: docker-compose -f "{{ docker_compose_file }}" up --build -d
+      args:
+        chdir: "{{ project_dir }}"
+        
+    - name: Wait for services to be ready
+      wait_for:
+        host: localhost
+        port: "{{ item }}"
+        timeout: 60
+      loop:
+        - 3000  # Frontend
+        - 5000  # Backend
+        - 9090  # Prometheus
+        - 3001  # Grafana
+        
+    - name: Check service health
+      uri:
+        url: "http://localhost:{{ item.port }}/{{ item.endpoint }}"
+        method: GET
+        status_code: 200
+      loop:
+        - { port: 3000, endpoint: "health" }
+        - { port: 5000, endpoint: "health" }
+      register: health_check
+      
+    - name: Display deployment status
+      debug:
+        msg: "Deployment completed successfully! Services are running on:"
+        
+    - name: Display service URLs
+      debug:
+        msg: |
+          Frontend: http://localhost:3000
+          Backend API: http://localhost:5000
+          Grafana: http://localhost:3001 (admin/admin)
+          Prometheus: http://localhost:9090 
